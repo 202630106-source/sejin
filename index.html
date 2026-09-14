@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3-1반 스쿼드 메이커</title>
+    <style>
+        :root {
+            --primary-color: #2e7d32;
+            --primary-hover: #1b5e20;
+            --bg-color: #f4f6f8;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #e0e0e0;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            margin: 0 0 8px 0;
+            font-size: 1.8rem;
+        }
+
+        .header p {
+            color: #666;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .step-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 20px;
+        }
+
+        .step-title {
+            font-weight: bold;
+            font-size: 1.05rem;
+            margin-bottom: 12px;
+            color: var(--primary-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-option {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            background: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .btn-option.selected {
+            border-color: var(--primary-color);
+            background-color: #e8f5e9;
+            color: var(--primary-color);
+        }
+
+        /* 학생 추가 입력폼 */
+        .add-student-form {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .input-text {
+            flex: 2;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .input-select {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .btn-add {
+            padding: 8px 16px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* 학생 그리드 목록 */
+        .student-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 8px;
+            max-height: 320px;
+            overflow-y: auto;
+            padding: 4px;
+        }
+
+        .student-item {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            text-align: center;
+            background: #fafafa;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .student-item.absent {
+            background-color: #ffebee;
+            color: #c62828;
+            border-color: #ffcdd2;
+        }
+
+        .student-item.absent .student-name {
+            text-decoration: line-through;
+        }
+
+        .student-name {
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 4px;
+            cursor: pointer;
+        }
+
+        .student-info {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 6px;
+        }
+
+        .student-controls {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .btn-mini {
+            padding: 4px 6px;
+            border: 1px solid #ccc;
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+
+        .btn-mini:hover {
+            background: #eee;
+        }
+
+        .btn-del {
+            color: #d32f2f;
+            border-color: #ef9a9a;
+        }
+
+        .save-bar {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn-save-data {
+            flex: 2;
+            padding: 8px;
+            background: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .btn-reset-data {
+            flex: 1;
+            padding: 8px;
+            background: #757575;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .main-btn {
+            width: 100%;
+            padding: 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.15rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            box-shadow: 0 4px 10px rgba(46, 125, 50, 0.2);
+        }
+
+        .main-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* 결과 화면 */
+        .result-card {
+            display: none;
+            margin-top: 25px;
+            border: 2px solid var(--primary-color);
+        }
+
+        .result-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .team-box {
+            padding: 12px;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+
+        .team-a { border-top: 4px solid #1976d2; }
+        .team-b { border-top: 4px solid #e53935; }
+
+        .team-title {
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .team-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .team-list li {
+            padding: 6px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 0.88rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .team-list li:last-child {
+            border-bottom: none;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-secondary {
+            flex: 1;
+            padding: 12px;
+            background: #555;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+
+        .match-record {
+            margin-top: 18px;
+            padding-top: 15px;
+            border-top: 1px dashed var(--border-color);
+        }
+
+        .score-input {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin: 12px 0;
+        }
+
+        .score-input input {
+            width: 55px;
+            height: 40px;
+            text-align: center;
+            font-size: 1.2rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="header">
+        <h1>⚽ 3-1반 스쿼드 메이커</h1>
+        <p>AI가 분석하는 최적의 축구 팀 밸런스</p>
+    </div>
+
+    <!-- STEP 1: 코트 선택 -->
+    <div class="step-card">
+        <div class="step-title">STEP 1. 코트 종류 선택</div>
+        <div class="btn-group">
+            <div class="btn-option selected" id="btnHalf" onclick="setCourt('half')">
+                반코트<br><span style="font-size:0.8rem; font-weight:normal;">(권장: 6대6 이하)</span>
+            </div>
+            <div class="btn-option" id="btnFull" onclick="setCourt('full')">
+                풀코트<br><span style="font-size:0.8rem; font-weight:normal;">(권장: 7대7 이상)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- STEP 2: 명단 관리 및 결석자 선택 -->
+    <div class="step-card">
+        <div class="step-title">
+            <span>STEP 2. 명단 관리 & 결석 체크</span>
+            <span style="font-size: 0.75rem; font-weight: normal; color: #888;">이름 클릭시 결석</span>
+        </div>
+        
+        <!-- 학생 추가 입력 -->
+        <div class="add-student-form">
+            <input type="text" id="newName" class="input-text" placeholder="신규 학생 이름">
+            <select id="newScore" class="input-select">
+                <option value="5" selected>실력: 5점</option>
+                <option value="4.5">실력: 4.5점</option>
+                <option value="4">실력: 4점</option>
+                <option value="3.5">실력: 3.5점</option>
+                <option value="3">실력: 3점</option>
+                <option value="2.5">실력: 2.5점</option>
+                <option value="2">실력: 2점</option>
+                <option value="1">실력: 1점</option>
+            </select>
+            <button class="btn-add" onclick="addStudent()">추가</button>
+        </div>
+
+        <div class="student-grid" id="studentGrid"></div>
+
+        <div class="save-bar">
+            <button class="btn-save-data" onclick="saveToStorage()">💾 변경사항 저장하기</button>
+            <button class="btn-reset-data" onclick="resetToDefault()">🔄 기본값 복원</button>
+        </div>
+    </div>
+
+    <!-- STEP 3: 경기 방식 가이드 -->
+    <div class="step-card">
+        <div class="step-title">STEP 3. 매치 인원 안내</div>
+        <div style="text-align: center; padding: 5px 0;">
+            <div id="matchSummary" style="font-size: 1.15rem; font-weight: bold; color: #333;">- 대 - 매치</div>
+            <div id="courtGuide" style="font-size: 0.85rem; color: #666; margin-top: 4px;">출석 인원을 확인해주세요.</div>
+        </div>
+    </div>
+
+    <!-- STEP 4: AI 스쿼드 생성 버튼 -->
+    <button class="main-btn" onclick="buildSquad()">🤖 AI 밸런스 팀 스쿼드 생성하기</button>
+
+    <!-- 결과 화면 -->
+    <div class="step-card result-card" id="resultArea">
+        <div class="step-title">⚡ AI 팀 배치 결과</div>
+        
+        <div class="result-container">
+            <div class="team-box team-a">
+                <div class="team-title" style="color: #1976d2;">A 팀 <span id="scoreTagA" style="font-size:0.8rem;"></span></div>
+                <ul class="team-list" id="listTeamA"></ul>
+            </div>
+            <div class="team-box team-b">
+                <div class="team-title" style="color: #e53935;">B 팀 <span id="scoreTagB" style="font-size:0.8rem;"></span></div>
+                <ul class="team-list" id="listTeamB"></ul>
+            </div>
+        </div>
+
+        <div class="action-btns">
+            <button class="btn-secondary" onclick="buildSquad()">🔄 리롤 (다시 뽑기)</button>
+        </div>
+
+        <!-- 경기 결과 피드백 -->
+        <div class="match-record">
+            <div class="step-title" style="font-size: 0.95rem;">🏆 경기 결과 입력 (AI 학습 데이터)</div>
+            <div class="score-input">
+                <span style="font-weight:bold; color:#1976d2;">A팀</span>
+                <input type="number" id="scoreA" value="0" min="0">
+                <span>:</span>
+                <input type="number" id="scoreB" value="0" min="0">
+                <span style="font-weight:bold; color:#e53935;">B팀</span>
+            </div>
+            <button class="btn-secondary" style="background-color: var(--primary-color); width: 100%;" onclick="saveMatchResult()">경기 결과 저장 및 AI 피드백 반영</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 입력해주신 기본 데이터 고정 적용
+    const defaultStudents = [
+        { id: 2, name: "권혁준", score: 3.0, absent: false },
+        { id: 3, name: "김도연", score: 5.0, absent: false },
+        { id: 6, name: "김세진", score: 5.0, absent: false },
+        { id: 7, name: "김정호", score: 4.5, absent: false },
+        { id: 11, name: "박정준", score: 3.5, absent: false },
+        { id: 12, name: "박준영", score: 4.0, absent: false },
+        { id: 13, name: "박채움", score: 2.5, absent: false },
+        { id: 14, name: "서윤우", score: 2.0, absent: false },
+        { id: 15, name: "손보승", score: 2.0, absent: false },
+        { id: 16, name: "송현규", score: 4.0, absent: false },
+        { id: 17, name: "신율호", score: 5.0, absent: false },
+        { id: 18, name: "신지원", score: 3.0, absent: false },
+        { id: 24, name: "이규현", score: 3.5, absent: false },
+        { id: 25, name: "이규호", score: 4.5, absent: false },
+        { id: 26, name: "이민섭", score: 5.0, absent: false },
+        { id: 28, name: "장재혁", score: 5.0, absent: false },
+        { id: 30, name: "정주원", score: 5.0, absent: false },
+        { id: 32, name: "하정우", score: 5.0, absent: false }
+    ];
+
+    let students = [];
+    let courtType = 'half';
+    let currentA = [];
+    let currentB = [];
+
+    window.onload = function() {
+        loadFromStorage();
+        renderStudentGrid();
+        updateInfo();
+    };
+
+    function loadFromStorage() {
+        const savedData = localStorage.getItem('squad_maker_fixed_students');
+        if (savedData) {
+            students = JSON.parse(savedData);
+        } else {
+            students = JSON.parse(JSON.stringify(defaultStudents));
+        }
+    }
+
+    function saveToStorage() {
+        localStorage.setItem('squad_maker_fixed_students', JSON.stringify(students));
+        alert("수정사항이 정상적으로 저장되었습니다!");
+    }
+
+    function resetToDefault() {
+        if (confirm("원래 입력하셨던 18명의 초기 이름과 점수로 복원하시겠습니까?")) {
+            localStorage.removeItem('squad_maker_fixed_students');
+            students = JSON.parse(JSON.stringify(defaultStudents));
+            renderStudentGrid();
+            updateInfo();
+            alert("기본값으로 복원되었습니다.");
+        }
+    }
+
+    function renderStudentGrid() {
+        const grid = document.getElementById('studentGrid');
+        grid.innerHTML = '';
+        
+        students.forEach(student => {
+            const item = document.createElement('div');
+            item.className = `student-item ${student.absent ? 'absent' : ''}`;
+            item.innerHTML = `
+                <div>
+                    <div class="student-name" onclick="toggleAbsent(${student.id})" title="클릭하여 결석 토글">
+                        ${student.name}
+                    </div>
+                    <div class="student-info">실력: ★${student.score.toFixed(1)}</div>
+                </div>
+                <div class="student-controls">
+                    <button class="btn-mini" onclick="editStudentName(${student.id})">✏️ 수정</button>
+                    <button class="btn-mini btn-del" onclick="deleteStudent(${student.id})">삭제</button>
+                </div>
+            `;
+            grid.appendChild(item);
+        });
+    }
+
+    function editStudentName(id) {
+        const target = students.find(s => s.id === id);
+        if (!target) return;
+
+        const inputName = prompt(`'${target.name}'의 새로운 이름을 입력하세요:`, target.name);
+        if (inputName !== null && inputName.trim() !== "") {
+            target.name = inputName.trim();
+        }
+
+        const inputScore = prompt(`'${target.name}'의 실력 점수를 입력하세요 (1~5점 사이):`, target.score);
+        if (inputScore !== null && !isNaN(inputScore)) {
+            let scoreVal = parseFloat(inputScore);
+            if (scoreVal < 1) scoreVal = 1;
+            if (scoreVal > 5) scoreVal = 5;
+            target.score = scoreVal;
+        }
+
+        saveToStorage();
+        renderStudentGrid();
+        updateInfo();
+    }
+
+    function toggleAbsent(id) {
+        const target = students.find(s => s.id === id);
+        if (target) {
+            target.absent = !target.absent;
+            renderStudentGrid();
+            updateInfo();
+        }
+    }
+
+    function deleteStudent(id) {
+        if (confirm("정말 목록에서 삭제하시겠습니까?")) {
+            students = students.filter(s => s.id !== id);
+            saveToStorage();
+            renderStudentGrid();
+            updateInfo();
+        }
+    }
+
+    function addStudent() {
+        const nameInput = document.getElementById('newName');
+        const scoreSelect = document.getElementById('newScore');
+        const name = nameInput.value.trim();
+        
+        if (!name) {
+            alert("이름을 입력해주세요!");
+            return;
+        }
+
+        students.push({
+            id: Date.now(),
+            name: name,
+            score: parseFloat(scoreSelect.value),
+            absent: false
+        });
+
+        nameInput.value = '';
+        saveToStorage();
+        renderStudentGrid();
+        updateInfo();
+    }
+
+    function setCourt(type) {
+        courtType = type;
+        document.getElementById('btnHalf').classList.toggle('selected', type === 'half');
+        document.getElementById('btnFull').classList.toggle('selected', type === 'full');
+        updateInfo();
+    }
+
+    function updateInfo() {
+        const activeCount = students.filter(s => !s.absent).length;
+        const halfTeam = Math.floor(activeCount / 2);
+        
+        document.getElementById('matchSummary').innerText = `${halfTeam} 대 ${halfTeam} 경기 (출석 ${activeCount}명)`;
+        
+        let guide = "";
+        if (courtType === 'half' && halfTeam >= 7) {
+            guide = "⚠️ 출석 인원이 많습니다. 풀코트 경기를 권장합니다.";
+        } else if (courtType === 'full' && halfTeam <= 4) {
+            guide = "⚠️ 출석 인원이 적습니다. 반코트 경기를 권장합니다.";
+        } else {
+            guide = "선택하신 코트에 알맞은 인원 구성입니다.";
+        }
+        document.getElementById('courtGuide').innerText = guide;
+    }
+
+    function buildSquad() {
+        const activeStudents = students.filter(s => !s.absent);
+        if (activeStudents.length < 2) {
+            alert("최소 2명 이상의 출석 학생이 필요합니다.");
+            return;
+        }
+
+        let players = activeStudents.map(s => ({
+            ...s,
+            randomizedScore: s.score + (Math.random() * 0.8 - 0.4)
+        })).sort((a, b) => b.randomizedScore - a.randomizedScore);
+
+        let teamA = [];
+        let teamB = [];
+        let sumA = 0;
+        let sumB = 0;
+
+        players.forEach(p => {
+            if (teamA.length < Math.ceil(activeStudents.length / 2) && 
+               (sumA <= sumB || teamB.length >= Math.floor(activeStudents.length / 2))) {
+                teamA.push(p);
+                sumA += p.score;
+            } else {
+                teamB.push(p);
+                sumB += p.score;
+            }
+        });
+
+        currentA = teamA;
+        currentB = teamB;
+
+        document.getElementById('listTeamA').innerHTML = teamA.map(p => `<li><span>${p.name}</span><b>★${p.score.toFixed(1)}</b></li>`).join('');
+        document.getElementById('listTeamB').innerHTML = teamB.map(p => `<li><span>${p.name}</span><b>★${p.score.toFixed(1)}</b></li>`).join('');
+        
+        document.getElementById('scoreTagA').innerText = `(합계: ${sumA.toFixed(1)})`;
+        document.getElementById('scoreTagB').innerText = `(합계: ${sumB.toFixed(1)})`;
+
+        document.getElementById('resultArea').style.display = 'block';
+        document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function saveMatchResult() {
+        const scoreA = parseInt(document.getElementById('scoreA').value);
+        const scoreB = parseInt(document.getElementById('scoreB').value);
+
+        if (isNaN(scoreA) || isNaN(scoreB)) {
+            alert("점수를 올바르게 입력해주세요.");
+            return;
+        }
+
+        const diff = scoreA - scoreB;
+
+        if (diff > 0) {
+            adjustScore(currentA, 0.2);
+            adjustScore(currentB, -0.2);
+        } else if (diff < 0) {
+            adjustScore(currentA, -0.2);
+            adjustScore(currentB, 0.2);
+        }
+
+        saveToStorage();
+        alert("경기 결과가 저장되었습니다! 실력 데이터가 반영되었습니다.");
+        renderStudentGrid();
+        document.getElementById('scoreA').value = 0;
+        document.getElementById('scoreB').value = 0;
+    }
+
+    function adjustScore(teamList, change) {
+        teamList.forEach(p => {
+            const original = students.find(s => s.id === p.id);
+            if (original) {
+                original.score = Math.min(5, Math.max(1, original.score + change));
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

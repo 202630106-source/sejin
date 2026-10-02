@@ -3,469 +3,331 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3-1반 스쿼드 메이커</title>
+    <title>3-1반 EA FC Ultimate Squad Maker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Pretendard:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        sans: ['Pretendard', 'sans-serif'],
+                    },
+                    colors: {
+                        fifaGold: '#ffd700',
+                        fifaDark: '#0b0e14',
+                        fifaCardBg: '#131924',
+                        fifaAccent: '#00ff87',
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        :root {
-            --primary-color: #2e7d32;
-            --primary-hover: #1b5e20;
-            --bg-color: #f4f6f8;
-            --card-bg: #ffffff;
-            --text-color: #333333;
-            --border-color: #e0e0e0;
-        }
-
         body {
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
+            background-color: #080a0f;
+            background-image: 
+                radial-gradient(circle at 50% 20%, rgba(0, 255, 135, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 50% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+                linear-gradient(to bottom, rgba(11, 14, 20, 0.85), rgba(8, 10, 15, 0.95)),
+                repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255, 255, 255, 0.03) 40px, rgba(255, 255, 255, 0.03) 80px);
+            color: #ffffff;
+            min-height: 100vh;
         }
 
-        .app-container {
-            width: 100%;
-            max-width: 600px;
-            background: var(--card-bg);
-            padding: 25px;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        .fut-card {
+            background: linear-gradient(135deg, #1f293d 0%, #101622 100%);
+            border: 2px solid #ffd700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.25), inset 0 0 10px rgba(0, 0, 0, 0.8);
+            position: relative;
+            clip-path: polygon(12% 0, 88% 0, 100% 8%, 100% 92%, 88% 100%, 12% 100%, 0 92%, 0 8%);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 25px;
+        .fut-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 0 25px rgba(0, 255, 135, 0.5), inset 0 0 12px rgba(255, 215, 0, 0.5);
+            border-color: #00ff87;
         }
 
-        .header h1 {
-            color: var(--primary-color);
-            margin: 0 0 8px 0;
-            font-size: 1.8rem;
+        .fut-card.absent {
+            filter: grayscale(0.85) opacity(0.5);
+            border-color: #ef4444;
+            box-shadow: none;
         }
 
-        .header p {
-            color: #666;
-            margin: 0;
-            font-size: 0.95rem;
+        .fut-card.sub {
+            border-color: #94a3b8;
+            background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+            opacity: 0.85;
         }
 
-        .step-card {
-            background: #ffffff;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 18px;
-            margin-bottom: 20px;
+        .pitch-container {
+            background: 
+                radial-gradient(circle at center, rgba(0,255,135,0.1) 0%, transparent 70%),
+                linear-gradient(to bottom, #0f2e1b, #05140a);
+            border: 2px solid rgba(0, 255, 135, 0.4);
+            box-shadow: 0 0 30px rgba(0, 255, 135, 0.2);
         }
 
-        .step-title {
-            font-weight: bold;
-            font-size: 1.05rem;
-            margin-bottom: 12px;
-            color: var(--primary-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .glow-title {
+            text-shadow: 0 0 12px rgba(0, 255, 135, 0.6), 0 0 20px rgba(255, 215, 0, 0.4);
         }
 
-        .btn-group {
-            display: flex;
-            gap: 10px;
+        ::-webkit-scrollbar {
+            width: 6px;
         }
-
-        .btn-option {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid var(--border-color);
-            background: #fff;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.2s;
-            text-align: center;
+        ::-webkit-scrollbar-track {
+            background: #0b0e14;
         }
-
-        .btn-option.selected {
-            border-color: var(--primary-color);
-            background-color: #e8f5e9;
-            color: var(--primary-color);
+        ::-webkit-scrollbar-thumb {
+            background: #1f293d;
+            border-radius: 3px;
         }
-
-        /* 학생 추가 입력폼 */
-        .add-student-form {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-
-        .input-text {
-            flex: 2;
-            padding: 8px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 0.9rem;
-        }
-
-        .input-select {
-            flex: 1;
-            padding: 8px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 0.9rem;
-        }
-
-        .btn-add {
-            padding: 8px 16px;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        /* 학생 그리드 목록 */
-        .student-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 8px;
-            max-height: 320px;
-            overflow-y: auto;
-            padding: 4px;
-        }
-
-        .student-item {
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            text-align: center;
-            background: #fafafa;
-            transition: all 0.2s;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .student-item.absent {
-            background-color: #ffebee;
-            color: #c62828;
-            border-color: #ffcdd2;
-        }
-
-        .student-item.absent .student-name {
-            text-decoration: line-through;
-        }
-
-        .student-name {
-            font-weight: bold;
-            font-size: 1rem;
-            margin-bottom: 4px;
-            cursor: pointer;
-        }
-
-        .student-info {
-            font-size: 0.8rem;
-            color: #666;
-            margin-bottom: 6px;
-        }
-
-        .student-controls {
-            display: flex;
-            justify-content: center;
-            gap: 4px;
-        }
-
-        .btn-mini {
-            padding: 4px 6px;
-            border: 1px solid #ccc;
-            background: #fff;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.75rem;
-        }
-
-        .btn-mini:hover {
-            background: #eee;
-        }
-
-        .btn-del {
-            color: #d32f2f;
-            border-color: #ef9a9a;
-        }
-
-        .save-bar {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .btn-save-data {
-            flex: 2;
-            padding: 8px;
-            background: #1976d2;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 0.85rem;
-        }
-
-        .btn-reset-data {
-            flex: 1;
-            padding: 8px;
-            background: #757575;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 0.85rem;
-        }
-
-        .main-btn {
-            width: 100%;
-            padding: 16px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.15rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
-            box-shadow: 0 4px 10px rgba(46, 125, 50, 0.2);
-        }
-
-        .main-btn:hover {
-            background-color: var(--primary-hover);
-        }
-
-        /* 결과 화면 */
-        .result-card {
-            display: none;
-            margin-top: 25px;
-            border: 2px solid var(--primary-color);
-        }
-
-        .result-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 12px;
-        }
-
-        .team-box {
-            padding: 12px;
-            border-radius: 8px;
-            background: #f8f9fa;
-        }
-
-        .team-a { border-top: 4px solid #1976d2; }
-        .team-b { border-top: 4px solid #e53935; }
-
-        .team-title {
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 8px;
-            font-size: 1rem;
-        }
-
-        .team-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .team-list li {
-            padding: 6px 0;
-            border-bottom: 1px solid #eee;
-            font-size: 0.88rem;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .team-list li:last-child {
-            border-bottom: none;
-        }
-
-        .action-btns {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .btn-secondary {
-            flex: 1;
-            padding: 12px;
-            background: #555;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 0.95rem;
-        }
-
-        .match-record {
-            margin-top: 18px;
-            padding-top: 15px;
-            border-top: 1px dashed var(--border-color);
-        }
-
-        .score-input {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 12px;
-            margin: 12px 0;
-        }
-
-        .score-input input {
-            width: 55px;
-            height: 40px;
-            text-align: center;
-            font-size: 1.2rem;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-weight: bold;
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00ff87;
         }
     </style>
 </head>
-<body>
+<body class="p-3 md:p-6 font-sans">
 
-<div class="app-container">
-    <div class="header">
-        <h1>⚽ 3-1반 스쿼드 메이커</h1>
-        <p>AI가 분석하는 최적의 축구 팀 밸런스</p>
-    </div>
+<div class="max-w-4xl mx-auto space-y-6">
 
-    <!-- STEP 1: 코트 선택 -->
-    <div class="step-card">
-        <div class="step-title">STEP 1. 코트 종류 선택</div>
-        <div class="btn-group">
-            <div class="btn-option selected" id="btnHalf" onclick="setCourt('half')">
-                반코트<br><span style="font-size:0.8rem; font-weight:normal;">(권장: 6대6 이하)</span>
-            </div>
-            <div class="btn-option" id="btnFull" onclick="setCourt('full')">
-                풀코트<br><span style="font-size:0.8rem; font-weight:normal;">(권장: 7대7 이상)</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- STEP 2: 명단 관리 및 결석자 선택 -->
-    <div class="step-card">
-        <div class="step-title">
-            <span>STEP 2. 명단 관리 & 결석 체크</span>
-            <span style="font-size: 0.75rem; font-weight: normal; color: #888;">이름 클릭시 결석</span>
-        </div>
+    <!-- HEADER SECTION -->
+    <header class="text-center py-6 bg-fifaCardBg/80 backdrop-blur-md rounded-2xl border border-fifaGold/30 shadow-2xl relative overflow-hidden">
+        <div class="absolute -top-10 -left-10 w-32 h-32 bg-fifaAccent/10 rounded-full blur-2xl"></div>
+        <div class="absolute -bottom-10 -right-10 w-32 h-32 bg-fifaGold/10 rounded-full blur-2xl"></div>
         
-        <!-- 학생 추가 입력 -->
-        <div class="add-student-form">
-            <input type="text" id="newName" class="input-text" placeholder="신규 학생 이름">
-            <select id="newScore" class="input-select">
-                <option value="5" selected>실력: 5점</option>
-                <option value="4.5">실력: 4.5점</option>
-                <option value="4">실력: 4점</option>
-                <option value="3.5">실력: 3.5점</option>
-                <option value="3">실력: 3점</option>
-                <option value="2.5">실력: 2.5점</option>
-                <option value="2">실력: 2점</option>
-                <option value="1">실력: 1점</option>
-            </select>
-            <button class="btn-add" onclick="addStudent()">추가</button>
+        <div class="inline-block px-3 py-1 bg-fifaGold/10 border border-fifaGold/40 rounded-full text-fifaGold text-xs font-orbitron tracking-widest uppercase mb-2">
+            EA SPORTS FC 25 SQUAD BUILDER
+        </div>
+        <h1 class="text-3xl md:text-5xl font-extrabold font-orbitron tracking-wider glow-title bg-clip-text text-transparent bg-gradient-to-r from-fifaGold via-white to-fifaAccent">
+            3-1 ULTIMATE SQUAD
+        </h1>
+        <p class="text-gray-400 text-xs md:text-sm mt-1">AI 알고리즘 기반 선발 및 벤치 교체 매치메이킹 시스템</p>
+    </header>
+
+    <!-- STEP 1: COURT & MATCH FORMAT SELECTION -->
+    <section class="bg-fifaCardBg/90 border border-white/10 rounded-2xl p-5 shadow-lg backdrop-blur-sm space-y-4">
+        <div class="flex items-center justify-between border-b border-white/10 pb-2">
+            <h2 class="text-lg font-bold flex items-center gap-2 text-fifaGold font-orbitron">
+                <span class="w-2 h-5 bg-fifaGold rounded-full inline-block"></span>
+                STEP 1. MATCH FORMAT & PITCH
+            </h2>
+            <span class="text-xs text-gray-400">구장 및 경기 인원 설정</span>
         </div>
 
-        <div class="student-grid" id="studentGrid"></div>
-
-        <div class="save-bar">
-            <button class="btn-save-data" onclick="saveToStorage()">💾 변경사항 저장하기</button>
-            <button class="btn-reset-data" onclick="resetToDefault()">🔄 기본값 복원</button>
+        <!-- COURT TYPE -->
+        <div class="grid grid-cols-2 gap-3">
+            <button id="btnHalf" onclick="setCourt('half')" class="p-3 rounded-xl border-2 border-fifaGold bg-fifaGold/10 text-fifaGold font-bold text-center transition-all hover:bg-fifaGold/20">
+                <div class="font-orbitron text-sm md:text-base">HALF COURT</div>
+                <div class="text-[11px] font-normal text-gray-300 mt-0.5">반코트 (5~6인 추천)</div>
+            </button>
+            <button id="btnFull" onclick="setCourt('full')" class="p-3 rounded-xl border-2 border-white/10 bg-black/40 text-gray-400 font-bold text-center transition-all hover:border-fifaAccent/50 hover:text-white">
+                <div class="font-orbitron text-sm md:text-base">FULL PITCH</div>
+                <div class="text-[11px] font-normal text-gray-300 mt-0.5">풀코트 (7~9인 추천)</div>
+            </button>
         </div>
-    </div>
 
-    <!-- STEP 3: 경기 방식 가이드 -->
-    <div class="step-card">
-        <div class="step-title">STEP 3. 매치 인원 안내</div>
-        <div style="text-align: center; padding: 5px 0;">
-            <div id="matchSummary" style="font-size: 1.15rem; font-weight: bold; color: #333;">- 대 - 매치</div>
-            <div id="courtGuide" style="font-size: 0.85rem; color: #666; margin-top: 4px;">출석 인원을 확인해주세요.</div>
-        </div>
-    </div>
-
-    <!-- STEP 4: AI 스쿼드 생성 버튼 -->
-    <button class="main-btn" onclick="buildSquad()">🤖 AI 밸런스 팀 스쿼드 생성하기</button>
-
-    <!-- 결과 화면 -->
-    <div class="step-card result-card" id="resultArea">
-        <div class="step-title">⚡ AI 팀 배치 결과</div>
-        
-        <div class="result-container">
-            <div class="team-box team-a">
-                <div class="team-title" style="color: #1976d2;">A 팀 <span id="scoreTagA" style="font-size:0.8rem;"></span></div>
-                <ul class="team-list" id="listTeamA"></ul>
+        <!-- MATCH FIELD PLAYERS SELECTOR (5v5 to 9v9) -->
+        <div class="bg-black/40 p-3 rounded-xl border border-white/10 space-y-2">
+            <div class="flex justify-between items-center">
+                <span class="text-xs font-bold text-fifaAccent font-orbitron">STARTING PLAYERS PER TEAM (팀당 선발 인원)</span>
+                <span id="targetSizeDisplay" class="text-xs font-orbitron text-fifaGold font-bold">6대6 매치</span>
             </div>
-            <div class="team-box team-b">
-                <div class="team-title" style="color: #e53935;">B 팀 <span id="scoreTagB" style="font-size:0.8rem;"></span></div>
-                <ul class="team-list" id="listTeamB"></ul>
+            <div class="grid grid-cols-5 gap-2">
+                <button onclick="setTeamSize(5)" id="sizeBtn-5" class="size-btn py-2 rounded-lg bg-fifaDark border border-white/10 text-xs font-orbitron font-bold hover:border-fifaAccent">5 v 5</button>
+                <button onclick="setTeamSize(6)" id="sizeBtn-6" class="size-btn py-2 rounded-lg bg-fifaAccent/20 border border-fifaAccent text-fifaAccent text-xs font-orbitron font-bold">6 v 6</button>
+                <button onclick="setTeamSize(7)" id="sizeBtn-7" class="size-btn py-2 rounded-lg bg-fifaDark border border-white/10 text-xs font-orbitron font-bold hover:border-fifaAccent">7 v 7</button>
+                <button onclick="setTeamSize(8)" id="sizeBtn-8" class="size-btn py-2 rounded-lg bg-fifaDark border border-white/10 text-xs font-orbitron font-bold hover:border-fifaAccent">8 v 8</button>
+                <button onclick="setTeamSize(9)" id="sizeBtn-9" class="size-btn py-2 rounded-lg bg-fifaDark border border-white/10 text-xs font-orbitron font-bold hover:border-fifaAccent">9 v 9</button>
             </div>
         </div>
+    </section>
 
-        <div class="action-btns">
-            <button class="btn-secondary" onclick="buildSquad()">🔄 리롤 (다시 뽑기)</button>
+    <!-- STEP 2: SQUAD ROSTER MANAGEMENT -->
+    <section class="bg-fifaCardBg/90 border border-white/10 rounded-2xl p-5 shadow-lg backdrop-blur-sm space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
+            <h2 class="text-lg font-bold flex items-center gap-2 text-fifaAccent font-orbitron">
+                <span class="w-2 h-5 bg-fifaAccent rounded-full inline-block"></span>
+                STEP 2. SQUAD ROSTER
+            </h2>
+            <span class="text-xs text-gray-400">선수 카드를 클릭하여 <span class="text-red-400 font-bold">출석/결석</span> 토글</span>
         </div>
 
-        <!-- 경기 결과 피드백 -->
-        <div class="match-record">
-            <div class="step-title" style="font-size: 0.95rem;">🏆 경기 결과 입력 (AI 학습 데이터)</div>
-            <div class="score-input">
-                <span style="font-weight:bold; color:#1976d2;">A팀</span>
-                <input type="number" id="scoreA" value="0" min="0">
-                <span>:</span>
-                <input type="number" id="scoreB" value="0" min="0">
-                <span style="font-weight:bold; color:#e53935;">B팀</span>
+        <!-- NEW PLAYER FORM -->
+        <div class="bg-black/50 p-3 rounded-xl border border-white/10 flex flex-wrap md:flex-nowrap gap-3 items-center justify-between">
+            <input type="text" id="newName" placeholder="신규 선수 이름 (예: 99번 홍길동)" class="bg-fifaDark text-sm px-3 py-2 rounded-lg border border-white/20 focus:outline-none focus:border-fifaAccent flex-1">
+            <div class="flex items-center gap-2 bg-fifaDark px-3 py-1.5 rounded-lg border border-white/10">
+                <span class="text-xs text-gray-400 font-orbitron">OVR:</span>
+                <div class="flex text-fifaGold text-base cursor-pointer" id="newStarRating">
+                    <span onclick="setNewScore(1)">★</span>
+                    <span onclick="setNewScore(2)">★</span>
+                    <span onclick="setNewScore(3)">★</span>
+                    <span onclick="setNewScore(4)">★</span>
+                    <span onclick="setNewScore(5)">★</span>
+                </div>
             </div>
-            <button class="btn-secondary" style="background-color: var(--primary-color); width: 100%;" onclick="saveMatchResult()">경기 결과 저장 및 AI 피드백 반영</button>
+            <button onclick="addStudent()" class="w-full md:w-auto px-5 py-2 bg-gradient-to-r from-fifaAccent to-emerald-600 text-black font-bold text-sm rounded-lg hover:brightness-110 transition-all font-orbitron">
+                + ADD PLAYER
+            </button>
         </div>
-    </div>
+
+        <!-- PLAYER CARDS GRID -->
+        <div id="studentGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 max-h-[400px] overflow-y-auto p-1"></div>
+
+        <div class="flex gap-2 pt-2">
+            <button onclick="manualSave()" class="flex-1 py-2.5 bg-blue-600/80 hover:bg-blue-600 text-white font-bold text-xs md:text-sm rounded-lg border border-blue-400/30 transition-all">
+                💾 선수 로스터 저장
+            </button>
+            <button onclick="resetToDefault()" class="px-4 py-2.5 bg-gray-700/80 hover:bg-gray-700 text-gray-300 font-bold text-xs md:text-sm rounded-lg border border-white/10 transition-all">
+                🔄 초기화
+            </button>
+        </div>
+    </section>
+
+    <!-- STEP 3: MATCHMAKING PREVIEW -->
+    <section class="bg-gradient-to-r from-fifaCardBg via-black to-fifaCardBg border border-fifaGold/30 rounded-2xl p-4 shadow-lg text-center">
+        <div class="text-xs text-fifaGold font-orbitron tracking-wider mb-1">MATCHMAKING PREVIEW</div>
+        <div id="matchSummary" class="text-xl md:text-2xl font-black text-white font-orbitron">
+            6 vs 6 MATCH
+        </div>
+        <div id="subSummary" class="text-xs md:text-sm text-fifaAccent font-orbitron mt-1">
+            (선발 12명 / 벤치 교체 6명)
+        </div>
+        <div id="courtGuide" class="text-xs text-gray-400 mt-1">선택하신 스쿼드에 최적화된 포맷입니다.</div>
+    </section>
+
+    <!-- GENERATE BUTTON -->
+    <button onclick="buildSquad()" class="w-full py-5 bg-gradient-to-r from-fifaGold via-fifaAccent to-fifaGold text-black font-black text-xl md:text-2xl rounded-2xl shadow-xl hover:brightness-110 active:scale-[0.99] transition-all font-orbitron tracking-wider border-2 border-white/30">
+        ⚡ GENERATE AI BALANCED TEAMS & SUBS
+    </button>
+
+    <!-- RESULT MATCH DISPLAY AREA -->
+    <section id="resultArea" class="hidden pitch-container rounded-3xl p-4 md:p-6 space-y-6">
+        <div class="text-center space-y-1">
+            <span class="px-3 py-1 bg-fifaAccent/20 border border-fifaAccent text-fifaAccent rounded-full text-xs font-orbitron">AI MATCHUP COMPLETE</span>
+            <h2 class="text-2xl md:text-3xl font-black text-white font-orbitron tracking-wide">3-1 ULTIMATE DERBY</h2>
+        </div>
+
+        <!-- TEAMS MATCHUP GRID -->
+        <div class="grid md:grid-cols-2 gap-6">
+            <!-- TEAM A -->
+            <div class="bg-black/70 border-t-4 border-blue-500 rounded-2xl p-4 backdrop-blur-md space-y-3">
+                <div class="flex justify-between items-center pb-2 border-b border-white/10">
+                    <h3 class="text-xl font-bold text-blue-400 font-orbitron">TEAM A</h3>
+                    <span id="scoreTagA" class="text-xs font-orbitron text-gray-300 bg-blue-950/80 border border-blue-500/40 px-2 py-1 rounded-md"></span>
+                </div>
+                
+                <!-- STARTING XI -->
+                <div>
+                    <div class="text-[11px] text-fifaAccent font-orbitron font-bold mb-1.5">⚡ STARTING PLAYERS (선발)</div>
+                    <div id="listStartingA" class="space-y-1.5"></div>
+                </div>
+
+                <!-- SUB BENCH -->
+                <div class="pt-2 border-t border-white/10">
+                    <div class="text-[11px] text-gray-400 font-orbitron font-bold mb-1.5 flex justify-between">
+                        <span>🪑 BENCH SUBSTITUTES (교체)</span>
+                        <span id="subCountA" class="text-fifaGold">0명</span>
+                    </div>
+                    <div id="listSubA" class="space-y-1.5"></div>
+                </div>
+            </div>
+
+            <!-- TEAM B -->
+            <div class="bg-black/70 border-t-4 border-red-500 rounded-2xl p-4 backdrop-blur-md space-y-3">
+                <div class="flex justify-between items-center pb-2 border-b border-white/10">
+                    <h3 class="text-xl font-bold text-red-400 font-orbitron">TEAM B</h3>
+                    <span id="scoreTagB" class="text-xs font-orbitron text-gray-300 bg-red-950/80 border border-red-500/40 px-2 py-1 rounded-md"></span>
+                </div>
+                
+                <!-- STARTING XI -->
+                <div>
+                    <div class="text-[11px] text-fifaAccent font-orbitron font-bold mb-1.5">⚡ STARTING PLAYERS (선발)</div>
+                    <div id="listStartingB" class="space-y-1.5"></div>
+                </div>
+
+                <!-- SUB BENCH -->
+                <div class="pt-2 border-t border-white/10">
+                    <div class="text-[11px] text-gray-400 font-orbitron font-bold mb-1.5 flex justify-between">
+                        <span>🪑 BENCH SUBSTITUTES (교체)</span>
+                        <span id="subCountB" class="text-fifaGold">0명</span>
+                    </div>
+                    <div id="listSubB" class="space-y-1.5"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTION BUTTONS & SHUFFLE SUBS -->
+        <div class="space-y-3 pt-2">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <button onclick="shuffleSubstitutes()" class="py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:brightness-110 text-white font-bold text-sm rounded-xl border border-purple-400/40 transition-all font-orbitron shadow-lg">
+                    🔀 ROTATE SUBS (선발/교체 선수 랜덤 셔플)
+                </button>
+                <button onclick="buildSquad()" class="py-3 bg-white/10 hover:bg-white/20 text-white font-bold text-sm rounded-xl border border-white/20 transition-all font-orbitron">
+                    🔄 RE-ROLL ALL SQUADS (팀 완전 재구성)
+                </button>
+            </div>
+
+            <!-- MATCH SCORE INPUT -->
+            <div class="bg-black/80 border border-fifaGold/30 rounded-2xl p-4 text-center space-y-3">
+                <div class="text-xs font-bold text-fifaGold font-orbitron">MATCH FEEDBACK & RATING AUTO-ADJUSTMENT</div>
+                <div class="flex justify-center items-center gap-4">
+                    <span class="font-bold text-blue-400">TEAM A</span>
+                    <input type="number" id="scoreA" value="0" min="0" class="w-16 h-12 text-center text-xl font-bold bg-fifaDark border border-white/20 rounded-xl text-white font-orbitron">
+                    <span class="text-xl font-bold text-gray-500">:</span>
+                    <input type="number" id="scoreB" value="0" min="0" class="w-16 h-12 text-center text-xl font-bold bg-fifaDark border border-white/20 rounded-xl text-white font-orbitron">
+                    <span class="font-bold text-red-400">TEAM B</span>
+                </div>
+                <button onclick="saveMatchResult()" class="w-full py-2.5 bg-gradient-to-r from-emerald-600 to-fifaAccent text-black font-extrabold text-sm rounded-xl hover:brightness-110 transition-all font-orbitron">
+                    RECORD RESULT & UPDATE PLAYER OVR
+                </button>
+            </div>
+        </div>
+    </section>
+
 </div>
 
 <script>
-    // 입력해주신 기본 데이터 고정 적용
     const defaultStudents = [
-        { id: 2, name: "권혁준", score: 3.0, absent: false },
-        { id: 3, name: "김도연", score: 5.0, absent: false },
-        { id: 6, name: "김세진", score: 5.0, absent: false },
-        { id: 7, name: "김정호", score: 4.5, absent: false },
-        { id: 11, name: "박정준", score: 3.5, absent: false },
-        { id: 12, name: "박준영", score: 4.0, absent: false },
-        { id: 13, name: "박채움", score: 2.5, absent: false },
-        { id: 14, name: "서윤우", score: 2.0, absent: false },
-        { id: 15, name: "손보승", score: 2.0, absent: false },
-        { id: 16, name: "송현규", score: 4.0, absent: false },
-        { id: 17, name: "신율호", score: 5.0, absent: false },
-        { id: 18, name: "신지원", score: 3.0, absent: false },
-        { id: 24, name: "이규현", score: 3.5, absent: false },
-        { id: 25, name: "이규호", score: 4.5, absent: false },
-        { id: 26, name: "이민섭", score: 5.0, absent: false },
-        { id: 28, name: "장재혁", score: 5.0, absent: false },
-        { id: 30, name: "정주원", score: 5.0, absent: false },
-        { id: 32, name: "하정우", score: 5.0, absent: false }
+        { id: 2, name: "2번 권혁준", score: 3.0, absent: false },
+        { id: 3, name: "3번 김도연", score: 5.0, absent: false },
+        { id: 6, name: "6번 김세진", score: 5.0, absent: false },
+        { id: 7, name: "7번 김정호", score: 4.5, absent: false },
+        { id: 11, name: "11번 박정준", score: 3.5, absent: false },
+        { id: 12, name: "12번 박준영", score: 4.0, absent: false },
+        { id: 13, name: "13번 박채움", score: 2.5, absent: false },
+        { id: 14, name: "14번 서윤우", score: 2.0, absent: false },
+        { id: 15, name: "15번 손보승", score: 2.0, absent: false },
+        { id: 16, name: "16번 송현규", score: 4.0, absent: false },
+        { id: 17, name: "17번 신율호", score: 5.0, absent: false },
+        { id: 18, name: "18번 신지원", score: 3.0, absent: false },
+        { id: 24, name: "24번 이규현", score: 3.5, absent: false },
+        { id: 25, name: "25번 이규호", score: 4.5, absent: false },
+        { id: 26, name: "26번 이민섭", score: 5.0, absent: false },
+        { id: 28, name: "28번 장재혁", score: 5.0, absent: false },
+        { id: 30, name: "30번 정주원", score: 5.0, absent: false },
+        { id: 32, name: "32번 하정우", score: 5.0, absent: false }
     ];
 
     let students = [];
     let courtType = 'half';
-    let currentA = [];
-    let currentB = [];
+    let targetTeamSize = 6; // 기본 팀당 6명 선발
+    let currentTeamA = [];
+    let currentTeamB = [];
+    let newStudentScore = 5.0;
 
     window.onload = function() {
         loadFromStorage();
         renderStudentGrid();
         updateInfo();
+        renderNewStarRating();
     };
 
     function loadFromStorage() {
-        const savedData = localStorage.getItem('squad_maker_fixed_students');
+        const savedData = localStorage.getItem('squad_maker_fifa_v2');
         if (savedData) {
             students = JSON.parse(savedData);
         } else {
@@ -473,170 +335,291 @@
         }
     }
 
-    function saveToStorage() {
-        localStorage.setItem('squad_maker_fixed_students', JSON.stringify(students));
-        alert("수정사항이 정상적으로 저장되었습니다!");
+    function autoSave() {
+        localStorage.setItem('squad_maker_fifa_v2', JSON.stringify(students));
+    }
+
+    function manualSave() {
+        autoSave();
+        alert("선수 명단 및 능력치가 수동 저장되었습니다!");
     }
 
     function resetToDefault() {
-        if (confirm("원래 입력하셨던 18명의 초기 이름과 점수로 복원하시겠습니까?")) {
-            localStorage.removeItem('squad_maker_fixed_students');
+        if (confirm("기본 명단으로 복원하시겠습니까?")) {
+            localStorage.removeItem('squad_maker_fifa_v2');
             students = JSON.parse(JSON.stringify(defaultStudents));
             renderStudentGrid();
             updateInfo();
-            alert("기본값으로 복원되었습니다.");
+            document.getElementById('resultArea').classList.add('hidden');
         }
+    }
+
+    function getOvrRating(score) {
+        return Math.round(score * 18);
     }
 
     function renderStudentGrid() {
         const grid = document.getElementById('studentGrid');
         grid.innerHTML = '';
-        
+
         students.forEach(student => {
-            const item = document.createElement('div');
-            item.className = `student-item ${student.absent ? 'absent' : ''}`;
-            item.innerHTML = `
-                <div>
-                    <div class="student-name" onclick="toggleAbsent(${student.id})" title="클릭하여 결석 토글">
+            const ovr = getOvrRating(student.score);
+            const card = document.createElement('div');
+            card.className = `fut-card p-2.5 text-center flex flex-col justify-between ${student.absent ? 'absent' : ''}`;
+            
+            let stars = '';
+            for (let i = 1; i <= 5; i++) {
+                const isFilled = i <= Math.round(student.score);
+                stars += `<span class="cursor-pointer transition-colors ${isFilled ? 'text-fifaGold' : 'text-gray-600'}" onclick="event.stopPropagation(); updateScore(${student.id}, ${i})">★</span>`;
+            }
+
+            card.innerHTML = `
+                <div onclick="toggleAbsent(${student.id})" class="cursor-pointer">
+                    <div class="flex justify-between items-start">
+                        <span class="text-[10px] font-orbitron font-bold text-fifaGold bg-black/60 px-1.5 py-0.5 rounded">${ovr}</span>
+                        <span class="text-[9px] text-gray-400 font-orbitron">ST</span>
+                    </div>
+                    <div class="font-bold text-xs mt-1 truncate text-white leading-tight">
                         ${student.name}
                     </div>
-                    <div class="student-info">실력: ★${student.score.toFixed(1)}</div>
+                    <div class="text-[10px] my-1">${stars}</div>
                 </div>
-                <div class="student-controls">
-                    <button class="btn-mini" onclick="editStudentName(${student.id})">✏️ 수정</button>
-                    <button class="btn-mini btn-del" onclick="deleteStudent(${student.id})">삭제</button>
+                <div class="flex justify-between gap-1 pt-1 border-t border-white/10 text-[9px]">
+                    <button onclick="editName(${student.id})" class="flex-1 text-gray-300 hover:text-white bg-white/5 rounded py-0.5">수정</button>
+                    <button onclick="deleteStudent(${student.id})" class="text-red-400 hover:text-red-300 bg-red-950/40 rounded px-1 py-0.5">삭제</button>
                 </div>
             `;
-            grid.appendChild(item);
+            grid.appendChild(card);
         });
     }
 
-    function editStudentName(id) {
+    function updateScore(id, newScore) {
         const target = students.find(s => s.id === id);
-        if (!target) return;
-
-        const inputName = prompt(`'${target.name}'의 새로운 이름을 입력하세요:`, target.name);
-        if (inputName !== null && inputName.trim() !== "") {
-            target.name = inputName.trim();
+        if (target) {
+            target.score = parseFloat(newScore);
+            autoSave();
+            renderStudentGrid();
         }
-
-        const inputScore = prompt(`'${target.name}'의 실력 점수를 입력하세요 (1~5점 사이):`, target.score);
-        if (inputScore !== null && !isNaN(inputScore)) {
-            let scoreVal = parseFloat(inputScore);
-            if (scoreVal < 1) scoreVal = 1;
-            if (scoreVal > 5) scoreVal = 5;
-            target.score = scoreVal;
-        }
-
-        saveToStorage();
-        renderStudentGrid();
-        updateInfo();
     }
 
     function toggleAbsent(id) {
         const target = students.find(s => s.id === id);
         if (target) {
             target.absent = !target.absent;
+            autoSave();
             renderStudentGrid();
             updateInfo();
+        }
+    }
+
+    function editName(id) {
+        const target = students.find(s => s.id === id);
+        if (!target) return;
+        const newName = prompt("변경할 이름을 입력하세요:", target.name);
+        if (newName && newName.trim() !== "") {
+            target.name = newName.trim();
+            autoSave();
+            renderStudentGrid();
         }
     }
 
     function deleteStudent(id) {
-        if (confirm("정말 목록에서 삭제하시겠습니까?")) {
+        if (confirm("선수를 삭제하시겠습니까?")) {
             students = students.filter(s => s.id !== id);
-            saveToStorage();
+            autoSave();
             renderStudentGrid();
             updateInfo();
         }
     }
 
+    function setNewScore(score) {
+        newStudentScore = score;
+        renderNewStarRating();
+    }
+
+    function renderNewStarRating() {
+        const container = document.getElementById('newStarRating');
+        let stars = '';
+        for (let i = 1; i <= 5; i++) {
+            stars += `<span class="${i <= newStudentScore ? 'text-fifaGold' : 'text-gray-600'}">★</span>`;
+        }
+        container.innerHTML = stars;
+    }
+
     function addStudent() {
-        const nameInput = document.getElementById('newName');
-        const scoreSelect = document.getElementById('newScore');
-        const name = nameInput.value.trim();
-        
+        const input = document.getElementById('newName');
+        const name = input.value.trim();
         if (!name) {
-            alert("이름을 입력해주세요!");
+            alert("선수 이름을 입력해주세요!");
             return;
         }
 
         students.push({
             id: Date.now(),
             name: name,
-            score: parseFloat(scoreSelect.value),
+            score: newStudentScore,
             absent: false
         });
 
-        nameInput.value = '';
-        saveToStorage();
+        input.value = '';
+        setNewScore(5);
+        autoSave();
         renderStudentGrid();
         updateInfo();
     }
 
     function setCourt(type) {
         courtType = type;
-        document.getElementById('btnHalf').classList.toggle('selected', type === 'half');
-        document.getElementById('btnFull').classList.toggle('selected', type === 'full');
+        const btnHalf = document.getElementById('btnHalf');
+        const btnFull = document.getElementById('btnFull');
+
+        if (type === 'half') {
+            btnHalf.className = "p-3 rounded-xl border-2 border-fifaGold bg-fifaGold/10 text-fifaGold font-bold text-center transition-all hover:bg-fifaGold/20";
+            btnFull.className = "p-3 rounded-xl border-2 border-white/10 bg-black/40 text-gray-400 font-bold text-center transition-all hover:border-fifaAccent/50 hover:text-white";
+        } else {
+            btnFull.className = "p-3 rounded-xl border-2 border-fifaAccent bg-fifaAccent/10 text-fifaAccent font-bold text-center transition-all hover:bg-fifaAccent/20";
+            btnHalf.className = "p-3 rounded-xl border-2 border-white/10 bg-black/40 text-gray-400 font-bold text-center transition-all hover:border-fifaGold/50 hover:text-white";
+        }
+        updateInfo();
+    }
+
+    function setTeamSize(size) {
+        targetTeamSize = size;
+        document.querySelectorAll('.size-btn').forEach(btn => {
+            btn.className = "size-btn py-2 rounded-lg bg-fifaDark border border-white/10 text-xs font-orbitron font-bold hover:border-fifaAccent";
+        });
+        const activeBtn = document.getElementById(`sizeBtn-${size}`);
+        if (activeBtn) {
+            activeBtn.className = "size-btn py-2 rounded-lg bg-fifaAccent/20 border border-fifaAccent text-fifaAccent text-xs font-orbitron font-bold";
+        }
+        document.getElementById('targetSizeDisplay').innerText = `${size}대${size} 매치`;
         updateInfo();
     }
 
     function updateInfo() {
         const activeCount = students.filter(s => !s.absent).length;
-        const halfTeam = Math.floor(activeCount / 2);
-        
-        document.getElementById('matchSummary').innerText = `${halfTeam} 대 ${halfTeam} 경기 (출석 ${activeCount}명)`;
-        
-        let guide = "";
-        if (courtType === 'half' && halfTeam >= 7) {
-            guide = "⚠️ 출석 인원이 많습니다. 풀코트 경기를 권장합니다.";
-        } else if (courtType === 'full' && halfTeam <= 4) {
-            guide = "⚠️ 출석 인원이 적습니다. 반코트 경기를 권장합니다.";
-        } else {
-            guide = "선택하신 코트에 알맞은 인원 구성입니다.";
-        }
-        document.getElementById('courtGuide').innerText = guide;
-    }
+        const totalStartingNeeded = targetTeamSize * 2;
+        const subCount = Math.max(0, activeCount - totalStartingNeeded);
 
-    function buildSquad() {
-        const activeStudents = students.filter(s => !s.absent);
-        if (activeStudents.length < 2) {
-            alert("최소 2명 이상의 출석 학생이 필요합니다.");
+        const summary = document.getElementById('matchSummary');
+        const subSummary = document.getElementById('subSummary');
+        const guide = document.getElementById('courtGuide');
+
+        if (activeCount === 0) {
+            summary.innerText = "NO ACTIVE PLAYERS";
+            subSummary.innerText = "";
+            guide.innerText = "출석 체크를 확인해 주세요.";
             return;
         }
 
-        let players = activeStudents.map(s => ({
-            ...s,
-            randomizedScore: s.score + (Math.random() * 0.8 - 0.4)
-        })).sort((a, b) => b.randomizedScore - a.randomizedScore);
+        summary.innerText = `${targetTeamSize} vs ${targetTeamSize} MATCH`;
+        subSummary.innerText = `(선발 ${Math.min(activeCount, totalStartingNeeded)}명 / 벤치 교체 ${subCount}명)`;
+
+        if (activeCount < totalStartingNeeded) {
+            guide.innerText = `⚠️ 출석 인원(${activeCount}명)이 선발 필요 인원(${totalStartingNeeded}명)보다 적습니다. 팀 크기를 줄여주세요.`;
+        } else if (courtType === 'half' && targetTeamSize >= 7) {
+            guide.innerText = "⚠️ 반코트 대비 인원이 많습니다. 풀코트를 권장합니다.";
+        } else {
+            guide.innerText = "선택하신 모드에 적합한 인원 구성입니다.";
+        }
+    }
+
+    function buildSquad() {
+        const active = students.filter(s => !s.absent);
+        if (active.length < 2) {
+            alert("최소 2명 이상의 출석 선수가 필요합니다!");
+            return;
+        }
+
+        // 1. AI 밸런스에 의한 팀 분배 (전체 인원 반반 나눔)
+        let randomized = active.map(p => ({
+            ...p,
+            calcScore: p.score + (Math.random() * 0.6 - 0.3)
+        })).sort((a, b) => b.calcScore - a.calcScore);
 
         let teamA = [];
         let teamB = [];
         let sumA = 0;
         let sumB = 0;
 
-        players.forEach(p => {
-            if (teamA.length < Math.ceil(activeStudents.length / 2) && 
-               (sumA <= sumB || teamB.length >= Math.floor(activeStudents.length / 2))) {
-                teamA.push(p);
-                sumA += p.score;
+        randomized.forEach(player => {
+            if (teamA.length < Math.ceil(active.length / 2) && 
+               (sumA <= sumB || teamB.length >= Math.floor(active.length / 2))) {
+                teamA.push(player);
+                sumA += player.score;
             } else {
-                teamB.push(p);
-                sumB += p.score;
+                teamB.push(player);
+                sumB += player.score;
             }
         });
 
-        currentA = teamA;
-        currentB = teamB;
+        // 2. 각 팀 내에서 선발(targetTeamSize)과 교체(SUB) 무작위 선정
+        currentTeamA = assignStartersAndSubs(teamA, targetTeamSize);
+        currentTeamB = assignStartersAndSubs(teamB, targetTeamSize);
 
-        document.getElementById('listTeamA').innerHTML = teamA.map(p => `<li><span>${p.name}</span><b>★${p.score.toFixed(1)}</b></li>`).join('');
-        document.getElementById('listTeamB').innerHTML = teamB.map(p => `<li><span>${p.name}</span><b>★${p.score.toFixed(1)}</b></li>`).join('');
-        
-        document.getElementById('scoreTagA').innerText = `(합계: ${sumA.toFixed(1)})`;
-        document.getElementById('scoreTagB').innerText = `(합계: ${sumB.toFixed(1)})`;
+        renderSquadResults();
 
-        document.getElementById('resultArea').style.display = 'block';
-        document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth' });
+        const resArea = document.getElementById('resultArea');
+        resArea.classList.remove('hidden');
+        resArea.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function assignStartersAndSubs(teamArray, size) {
+        // 무작위로 섞은 후 앞부분을 선발, 뒷부분을 교체로 지정
+        let shuffled = [...teamArray].sort(() => Math.random() - 0.5);
+        return shuffled.map((player, idx) => ({
+            ...player,
+            isStarter: idx < size
+        }));
+    }
+
+    function shuffleSubstitutes() {
+        if (!currentTeamA.length || !currentTeamB.length) return;
+
+        currentTeamA = assignStartersAndSubs(currentTeamA, targetTeamSize);
+        currentTeamB = assignStartersAndSubs(currentTeamB, targetTeamSize);
+
+        renderSquadResults();
+    }
+
+    function renderSquadResults() {
+        const startersA = currentTeamA.filter(p => p.isStarter);
+        const subsA = currentTeamA.filter(p => !p.isStarter);
+        const startersB = currentTeamB.filter(p => p.isStarter);
+        const subsB = currentTeamB.filter(p => !p.isStarter);
+
+        renderPlayerList('listStartingA', startersA, false);
+        renderPlayerList('listSubA', subsA, true);
+        renderPlayerList('listStartingB', startersB, false);
+        renderPlayerList('listSubB', subsB, true);
+
+        const avgA = startersA.length ? (startersA.reduce((s, p) => s + p.score, 0) / startersA.length * 18).toFixed(0) : 0;
+        const avgB = startersB.length ? (startersB.reduce((s, p) => s + p.score, 0) / startersB.length * 18).toFixed(0) : 0;
+
+        document.getElementById('scoreTagA').innerText = `OVR AVG: ${avgA} (${startersA.length}명 선발)`;
+        document.getElementById('scoreTagB').innerText = `OVR AVG: ${avgB} (${startersB.length}명 선발)`;
+
+        document.getElementById('subCountA').innerText = `${subsA.length}명 벤치`;
+        document.getElementById('subCountB').innerText = `${subsB.length}명 벤치`;
+    }
+
+    function renderPlayerList(elementId, playerArray, isSub) {
+        const container = document.getElementById(elementId);
+        if (playerArray.length === 0) {
+            container.innerHTML = `<div class="text-[11px] text-gray-500 italic py-1">교체 선수 없음</div>`;
+            return;
+        }
+
+        container.innerHTML = playerArray.map(p => `
+            <div class="flex items-center justify-between p-2 rounded-lg ${isSub ? 'bg-black/40 border border-white/5 opacity-80' : 'bg-white/10 border border-white/10'} text-xs">
+                <div class="flex items-center gap-2">
+                    <span class="font-orbitron font-bold text-fifaGold bg-black/60 px-1.5 py-0.5 rounded text-[10px]">${getOvrRating(p.score)}</span>
+                    <span class="font-semibold text-white">${p.name}</span>
+                    ${isSub ? '<span class="text-[9px] bg-gray-800 text-gray-300 px-1 rounded font-orbitron">SUB</span>' : ''}
+                </div>
+                <span class="text-fifaGold font-orbitron text-[11px]">★${p.score.toFixed(1)}</span>
+            </div>
+        `).join('');
     }
 
     function saveMatchResult() {
@@ -644,32 +627,30 @@
         const scoreB = parseInt(document.getElementById('scoreB').value);
 
         if (isNaN(scoreA) || isNaN(scoreB)) {
-            alert("점수를 올바르게 입력해주세요.");
+            alert("점수를 입력해주세요.");
             return;
         }
 
-        const diff = scoreA - scoreB;
-
-        if (diff > 0) {
-            adjustScore(currentA, 0.2);
-            adjustScore(currentB, -0.2);
-        } else if (diff < 0) {
-            adjustScore(currentA, -0.2);
-            adjustScore(currentB, 0.2);
+        if (scoreA > scoreB) {
+            adjustScores(currentTeamA, 0.3);
+            adjustScores(currentTeamB, -0.3);
+        } else if (scoreB > scoreA) {
+            adjustScores(currentTeamA, -0.3);
+            adjustScores(currentTeamB, 0.3);
         }
 
-        saveToStorage();
-        alert("경기 결과가 저장되었습니다! 실력 데이터가 반영되었습니다.");
+        autoSave();
+        alert("경기 결과가 승점 및 능력이 피드백되어 반영되었습니다!");
         renderStudentGrid();
         document.getElementById('scoreA').value = 0;
         document.getElementById('scoreB').value = 0;
     }
 
-    function adjustScore(teamList, change) {
-        teamList.forEach(p => {
-            const original = students.find(s => s.id === p.id);
-            if (original) {
-                original.score = Math.min(5, Math.max(1, original.score + change));
+    function adjustScores(team, delta) {
+        team.forEach(p => {
+            const target = students.find(s => s.id === p.id);
+            if (target) {
+                target.score = Math.min(5.0, Math.max(1.0, target.score + delta));
             }
         });
     }
